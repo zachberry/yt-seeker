@@ -18,6 +18,7 @@ class YouTube extends React.Component {
 
 		events.on('youtube:skipToNumber', this.seekToNumber.bind(this))
 		events.on('youtube:skipToPerc', this.seekToPerc.bind(this))
+		events.on('youtube:changePlay', this.changePlay.bind(this))
 
 		if (!window.onYouTubeIframeAPIReady) {
 			window.onYouTubeIframeAPIReady = this.onYouTubeIframeAPIReady.bind(this)
@@ -25,6 +26,14 @@ class YouTube extends React.Component {
 			this.injectedScriptTag = document.createElement('script')
 			this.injectedScriptTag.src = 'https://www.youtube.com/iframe_api'
 			document.body.appendChild(this.injectedScriptTag)
+		}
+	}
+
+	changePlay() {
+		if (this.player.getPlayerState() === 1) {
+			this.player.pauseVideo()
+		} else {
+			this.player.playVideo()
 		}
 	}
 
@@ -100,7 +109,13 @@ class YouTube extends React.Component {
 		return (
 			<div>
 				<div id="player" />
-				<div className="nudge">{`Nudge: ${this.props.nudge.toFixed(1)}s`}</div>
+				{this.props.currentKey ? (
+					<div className="nudge">
+						<span className="key">{this.props.currentKey.toUpperCase()}</span>
+						{` Nudge: ${this.props.nudge.toFixed(1)}s`}
+					</div>
+				) : null}
+
 				<div id="last-seek-container"></div>
 			</div>
 		)

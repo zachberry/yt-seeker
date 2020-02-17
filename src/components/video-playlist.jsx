@@ -120,9 +120,9 @@ class VideoPlaylist extends React.Component {
 					</div>
 				</div>
 				<ul>
-					{this.state.videos.map(v => {
+					{this.state.videos.map((v, index) => {
 						return (
-							<li key={v.id} onClick={this.onClickVideo.bind(this, v.id)}>
+							<li key={index} onClick={this.onClickVideo.bind(this, v.id)}>
 								{v.thumbURL ? (
 									<img alt="" width={v.thumbWidth} height={v.thumbHeight} src={v.thumbURL} />
 								) : null}

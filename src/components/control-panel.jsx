@@ -52,6 +52,7 @@ class ControlPanel extends React.Component {
 		const number = parseInt(event.key, 10)
 		if (Number.isFinite(number)) {
 			events.emit('youtube:skipToNumber', number)
+			events.emit('youtube:changeKey', event.key)
 			return
 		}
 
@@ -75,10 +76,16 @@ class ControlPanel extends React.Component {
 			return
 		}
 
+		if (event.key === ' ') {
+			events.emit('youtube:changePlay')
+			return
+		}
+
 		const i = keyTable.indexOf(event.key)
 		if (i === -1) return
 
 		events.emit('youtube:skipToPerc', i / (keyTable.length - 1))
+		events.emit('youtube:changeKey', event.key)
 	}
 
 	goto(secs) {
