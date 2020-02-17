@@ -16,15 +16,23 @@ class App extends React.Component {
 
 		events.on('youtube:ready', this.onYouTubeReady.bind(this))
 		events.on('app:selectVideo', this.onSelectVideo.bind(this))
+		events.on('youtube:changeNudge', this.onChangeNudge.bind(this))
 		// events.on('youtube:skipTo', this.onYouTubeSkipTo.bind(this))
 
 		this.state = {
 			videoId: null,
 			nextVideoId: 'https://www.youtube.com/watch?v=Itg6mRZdQew&feature=youtu.be',
+			nudge: 0,
 			isYouTubeReady: false,
 			apiKey: window.localStorage.apiKey || ''
 			// seek: 0
 		}
+	}
+
+	onChangeNudge(amount) {
+		this.setState({
+			nudge: this.state.nudge + amount
+		})
 	}
 
 	onSelectVideo(videoId) {
@@ -97,7 +105,7 @@ class App extends React.Component {
 						></input>
 						<button onClick={this.onClickLoadVideo}>Load</button>
 					</div>
-					<YouTube videoId={this.state.videoId} seek={this.state.seek} />
+					<YouTube videoId={this.state.videoId} seek={this.state.seek} nudge={this.state.nudge} />
 					<ControlPanel ready={this.state.isYouTubeReady} />
 				</div>
 				<button className="settings-button" onClick={this.onClickSettings}>

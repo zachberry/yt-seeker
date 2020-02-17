@@ -2,8 +2,6 @@ import React from 'react'
 import events from '../events'
 
 const keyTable = [
-	'-',
-	'=',
 	'q',
 	'w',
 	'e',
@@ -54,6 +52,26 @@ class ControlPanel extends React.Component {
 		const number = parseInt(event.key, 10)
 		if (Number.isFinite(number)) {
 			events.emit('youtube:skipToNumber', number)
+			return
+		}
+
+		if (event.key === '-') {
+			events.emit('youtube:changeNudge', -0.1)
+			return
+		}
+
+		if (event.key === '=') {
+			events.emit('youtube:changeNudge', 0.1)
+			return
+		}
+
+		if (event.key === '_') {
+			events.emit('youtube:changeNudge', -1)
+			return
+		}
+
+		if (event.key === '+') {
+			events.emit('youtube:changeNudge', 1)
 			return
 		}
 

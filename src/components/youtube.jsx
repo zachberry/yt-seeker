@@ -45,7 +45,6 @@ class YouTube extends React.Component {
 			videoId: videoId,
 			events: {
 				onReady: this.onPlayerReady
-				// onStateChange: onPlayerStateChange
 			}
 		})
 	}
@@ -60,29 +59,30 @@ class YouTube extends React.Component {
 
 	seekToNumber(number) {
 		const duration = this.player.getDuration()
-		this.player.seekTo(duration * (number / 10), true)
+		this.player.seekTo(duration * (number / 10) + this.props.nudge, true)
 
-		// this.setState({
-		// 	lastSeek: number * 10 + '%'
-		// })
-		this.showPerc(number * 10)
+		this.showPerc(duration * (number / 10) + this.props.nudge)
 	}
 
 	seekToPerc(perc) {
 		const duration = this.player.getDuration()
-		this.player.seekTo(duration * perc, true)
+		this.player.seekTo(duration * perc + this.props.nudge, true)
 
-		this.showPerc((perc * 100).toFixed(2))
-
-		// this.setState({
-		// 	lastSeek: (perc * 100).toFixed(2) + '%'
-		// })
+		this.showPerc(duration * perc + this.props.nudge)
 	}
 
-	showPerc(perc) {
+	showPerc(secs) {
+		const duration = this.player.getDuration()
+		const perc = (secs / duration) * 100
+
 		document.getElementById('last-seek-container').innerHTML = ''
 		const el = document.createElement('span')
-		el.innerText = perc + '%'
+		const mins = parseInt(secs / 60, 10)
+		let secsStr = '0' + (secs - mins * 60).toFixed(0)
+		if (secsStr.length > 2) {
+			secsStr = secsStr.substr(1, 2)
+		}
+		el.innerText = perc.toFixed(2) + '%' + ' (' + mins + ':' + secsStr + ')'
 		document.getElementById('last-seek-container').appendChild(el)
 	}
 
@@ -100,6 +100,7 @@ class YouTube extends React.Component {
 		return (
 			<div>
 				<div id="player" />
+				<div className="nudge">{`Nudge: ${this.props.nudge.toFixed(1)}s`}</div>
 				<div id="last-seek-container"></div>
 			</div>
 		)
