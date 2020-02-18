@@ -61,6 +61,17 @@ input[type='submit']:hover {
 	margin-left: 0.5em;
 }
 
+.filter {
+	padding-left: 1em;
+}
+.filter label {
+	vertical-align: middle;
+	cursor: pointer;
+}
+.filter label * {
+	vertical-align: middle;
+}
+
 #playlist {
 	height: 100%;
 	width: 25em;
@@ -69,7 +80,7 @@ input[type='submit']:hover {
 }
 
 #playlist .controls {
-	height: 2.5em;
+	height: 4.5em;
 }
 
 #playlist ul {
@@ -78,7 +89,7 @@ input[type='submit']:hover {
 	padding: 0;
 	overflow: hidden;
 	overflow-y: scroll;
-	height: calc(100vh - 3em);
+	height: calc(100vh - 4.5em);
 	margin: 0;
 }
 
@@ -128,13 +139,25 @@ input[type='submit']:hover {
 	margin-top: 2em;
 }
 
+.bookmarks {
+	padding: 0 2em;
+}
+
 .nudge {
 	margin: 0 auto;
-	display: block;
+	display: inline-block;
 	margin-top: 1em;
-	width: 100%;
+	/* width: 100%; */
 	text-align: center;
 	margin-top: 1em;
+	cursor: pointer;
+	border-radius: 0.25em;
+	padding: 0.25em;
+	box-sizing: border-box;
+}
+.nudge:hover {
+	background: #f00;
+	color: white;
 }
 
 #last-seek-container > span {
@@ -162,10 +185,14 @@ input[type='submit']:hover {
 	}
 }
 
-.settings-button {
+.floating-buttons {
 	position: fixed;
 	right: 1em;
 	bottom: 1em;
+}
+
+.floating-buttons button {
+	margin-left: 1em;
 }
 
 .key {
@@ -173,7 +200,6 @@ input[type='submit']:hover {
 	width: 1em;
 	height: 1em;
 	border-radius: 0.2em;
-	border: 1px solid gray;
 	font-size: 0.9em;
 	padding: 0.2em;
 	vertical-align: middle;
@@ -181,4 +207,20 @@ input[type='submit']:hover {
 	padding-top: 0.6em;
 	height: 0.6em;
 	width: 1em;
+	margin-right: 1em;
+	background: rgba(255, 255, 255, 0.25);
+	font-weight: bold;
+}
+
+.delete-button {
+	width: 2em;
+	height: 2em;
+	border-radius: 2em;
+	margin-left: 1em;
+	background: none;
+	color: rgba(0, 0, 0, 0.5);
+}
+.delete-button:hover {
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
 }

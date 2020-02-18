@@ -8,6 +8,7 @@ class VideoPlaylist extends React.Component {
 
 		this.onClickRefresh = this.onClickRefresh.bind(this)
 		this.onChangePlaylistURL = this.onChangePlaylistURL.bind(this)
+		this.onClickFilterByBookmarkedVideos = this.onClickFilterByBookmarkedVideos.bind(this)
 
 		this.api = null
 		if (props.apiKey) {
@@ -19,7 +20,8 @@ class VideoPlaylist extends React.Component {
 				this.state = {
 					nextPlaylistURL: window.localStorage.playlistURL,
 					playlistURL: window.localStorage.playlistURL,
-					videos: JSON.parse(window.localStorage.videos)
+					videos: JSON.parse(window.localStorage.videos),
+					isFilteringByBookmarkedVideos: false
 				}
 				return
 			} catch (e) {
@@ -33,8 +35,15 @@ class VideoPlaylist extends React.Component {
 		this.state = {
 			playlistURL: '',
 			nextPlaylistURL: '',
-			videos: []
+			videos: [],
+			isFilteringByBookmarkedVideos: false
 		}
+	}
+
+	onClickFilterByBookmarkedVideos() {
+		this.setState({
+			isFilteringByBookmarkedVideos: !this.state.isFilteringByBookmarkedVideos
+		})
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -118,15 +127,29 @@ class VideoPlaylist extends React.Component {
 						/>
 						<button onClick={this.onClickRefresh}>Refresh</button>
 					</div>
+					<div className="filter">
+						<label>
+							<input
+								value={this.state.isFilteringByBookmarkedVideos}
+								onClick={this.onClickFilterByBookmarkedVideos}
+								type="checkbox"
+							/>{' '}
+							<span className="star">⭐</span>
+						</label>
+					</div>
 				</div>
 				<ul>
 					{this.state.videos.map((v, index) => {
+						const hasBookmarks = this.props.nudgeTable.videosById[v.id]
+
+						if (this.state.isFilteringByBookmarkedVideos && !hasBookmarks) return null
+
 						return (
 							<li key={index} onClick={this.onClickVideo.bind(this, v.id)}>
 								{v.thumbURL ? (
 									<img alt="" width={v.thumbWidth} height={v.thumbHeight} src={v.thumbURL} />
 								) : null}
-								<span>{v.title}</span>
+								<span>{(hasBookmarks ? '⭐ ' : '') + v.title}</span>
 							</li>
 						)
 					})}

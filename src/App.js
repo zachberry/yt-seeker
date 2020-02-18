@@ -18,11 +18,15 @@ class App extends React.Component {
 		this.onChangeVideoId = this.onChangeVideoId.bind(this)
 		this.onClickLoadVideo = this.onClickLoadVideo.bind(this)
 		this.onClickSettings = this.onClickSettings.bind(this)
+		this.onClickImport = this.onClickImport.bind(this)
+		this.onClickExport = this.onClickExport.bind(this)
 
 		events.on('youtube:ready', this.onYouTubeReady.bind(this))
 		events.on('app:selectVideo', this.onSelectVideo.bind(this))
 		events.on('youtube:changeKey', this.onChangeKey.bind(this))
 		events.on('youtube:changeNudge', this.onChangeNudge.bind(this))
+		events.on('app:clearNudge', this.onClearNudge.bind(this))
+		events.on('youtube:bookmark', this.onBookmark.bind(this))
 		// events.on('youtube:skipTo', this.onYouTubeSkipTo.bind(this))
 
 		if (window.localStorage.nudgeTable) {
@@ -51,6 +55,22 @@ class App extends React.Component {
 		}
 	}
 
+	onClearNudge(key) {
+		console.log('clearNudge', key)
+		if (!this.nudgeTable.videosById[this.state.videoId]) return
+		delete this.nudgeTable.videosById[this.state.videoId][key]
+
+		if (Object.keys(this.nudgeTable.videosById[this.state.videoId]).length === 0) {
+			delete this.nudgeTable.videosById[this.state.videoId]
+		}
+
+		this.setState({
+			nudgeTableChanges: this.nudgeTableChanges + 1
+		})
+
+		window.localStorage.nudgeTable = JSON.stringify(this.nudgeTable)
+	}
+
 	onChangeKey(key) {
 		this.setState({
 			currentKey: key
@@ -75,6 +95,10 @@ class App extends React.Component {
 		})
 
 		window.localStorage.nudgeTable = JSON.stringify(this.nudgeTable)
+	}
+
+	onBookmark() {
+		this.onChangeNudge(0)
 	}
 
 	onSelectVideo(videoId) {
@@ -114,6 +138,36 @@ class App extends React.Component {
 		this.promptUserForAPIKey()
 	}
 
+	onClickImport() {
+		const text = prompt('Import text?')
+		if (!text) return
+
+		const oldStorage = window.localStorage
+
+		console.log('import', text)
+
+		try {
+			const o = JSON.parse(text)
+
+			Object.keys(o).forEach(key => {
+				window.localStorage[key] = o[key]
+			})
+
+			window.location = window.location
+		} catch (e) {
+			console.error(e)
+			// window.localStorage = oldStorage
+
+			Object.keys(oldStorage).forEach(key => {
+				window.localStorage[key] = oldStorage[key]
+			})
+		}
+	}
+
+	onClickExport() {
+		document.write(JSON.stringify(window.localStorage, null, 2))
+	}
+
 	componentDidMount() {
 		if (!this.state.apiKey) {
 			this.promptUserForAPIKey()
@@ -144,7 +198,7 @@ class App extends React.Component {
 
 		return (
 			<div className="App">
-				<VideoPlaylist apiKey={this.state.apiKey} />
+				<VideoPlaylist apiKey={this.state.apiKey} nudgeTable={this.nudgeTable} />
 				<div className="board">
 					<div className="text-input">
 						<span className="label">Video ID:</span>
@@ -159,13 +213,22 @@ class App extends React.Component {
 						currentKey={this.state.currentKey}
 						videoId={this.state.videoId}
 						seek={this.state.seek}
-						nudge={nudge}
+						// nudge={nudge}
+						nudgeTable={this.nudgeTable}
 					/>
 					<ControlPanel ready={this.state.isYouTubeReady} />
 				</div>
-				<button className="settings-button" onClick={this.onClickSettings}>
-					Settings
-				</button>
+				<div className="floating-buttons">
+					<button className="settings-button" onClick={this.onClickSettings}>
+						Settings
+					</button>
+					<button className="import-button" onClick={this.onClickImport}>
+						Import
+					</button>
+					<button className="export-button" onClick={this.onClickExport}>
+						Export
+					</button>
+				</div>
 			</div>
 		)
 	}

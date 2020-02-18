@@ -67,17 +67,19 @@ class YouTube extends React.Component {
 	}
 
 	seekToNumber(number) {
+		const nudge = this.getNudgeForCurrentKey()
 		const duration = this.player.getDuration()
-		this.player.seekTo(duration * (number / 10) + this.props.nudge, true)
+		this.player.seekTo(duration * (number / 10) + nudge, true)
 
-		this.showPerc(duration * (number / 10) + this.props.nudge)
+		this.showPerc(duration * (number / 10) + nudge)
 	}
 
 	seekToPerc(perc) {
+		const nudge = this.getNudgeForCurrentKey()
 		const duration = this.player.getDuration()
-		this.player.seekTo(duration * perc + this.props.nudge, true)
+		this.player.seekTo(duration * perc + nudge, true)
 
-		this.showPerc(duration * perc + this.props.nudge)
+		this.showPerc(duration * perc + nudge)
 	}
 
 	showPerc(secs) {
@@ -105,17 +107,48 @@ class YouTube extends React.Component {
 		}
 	}
 
+	getNudgeForCurrentKey() {
+		const nudgesForVideo = this.props.nudgeTable.videosById[this.props.videoId]
+		if (!nudgesForVideo) return 0
+		return nudgesForVideo[this.props.currentKey] || 0
+	}
+
+	clearNudge(key) {
+		console.log('clearNudge', key)
+		events.emit('app:clearNudge', key)
+	}
+
+	onClickKey(key) {
+		events.emit('youtube:skipToKey', key)
+	}
+
 	render() {
+		const nudges = this.props.nudgeTable.videosById[this.props.videoId]
+			? this.props.nudgeTable.videosById[this.props.videoId]
+			: []
 		return (
 			<div>
 				<div id="player" />
-				{this.props.currentKey ? (
+				{/* {this.props.currentKey ? (
 					<div className="nudge">
 						<span className="key">{this.props.currentKey.toUpperCase()}</span>
 						{` Nudge: ${this.props.nudge.toFixed(1)}s`}
 					</div>
-				) : null}
+				) : null} */}
 
+				<div className="bookmarks">
+					{Object.keys(nudges).map(key => {
+						return (
+							<div onClick={this.onClickKey.bind(this, key)} className="nudge">
+								<span className="key">{key.toUpperCase()}</span>
+								{`${nudges[key].toFixed(1)}s`}
+								<button className="delete-button" onClick={this.clearNudge.bind(this, key)}>
+									&times;
+								</button>
+							</div>
+						)
+					})}
+				</div>
 				<div id="last-seek-container"></div>
 			</div>
 		)
